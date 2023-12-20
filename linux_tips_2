@@ -1,0 +1,60 @@
+#####Golden image update####
+Solution
+1) Verify when the system was last patched.
+cat /var/log/apt/history.log
+
+When was this system last patched? Can you verify it wasn't today?
+Use this block of code to see if today's date shows up in the patch log
+
+grep $(date +%F) /var/log/apt/history.log
+
+2.) Check if the system thinks it needs to be restarted.
+
+ls -l /var/run/reboot-required
+
+If that exists the system thinks it needs to be restarted.
+Check what packages are the cause of the system wanting to reboot.
+cat /var/run/reboot-required.pkgs
+
+3.) Install a command that will help you determine when the system wants to reboot. This is useful in enterprise environments so that you can see how your servers view their libraries and kernel states.
+apt install -y needrestart
+Check if your system needs to be restarted.
+
+needrestart -l
+Check if the system has anything ready to update.
+apt update
+This checked the metadata of your packages and saw if there are any upgradable packages. How many packages were upgradable?
+
+Check which packages are upgradable.
+
+apt list --upgradable
+Check if there are any ssl packages that need to be updated?
+
+apt list --upgradable | grep -i ssl
+Do you see any packages with ssl that need to be upgraded?
+
+You've checked the curent state of the system. Now it's time to upgrade everything.
+
+Upgrade your system.
+
+See what packages were upgraded.
+
+Verify that your system needs to restart and see if there is a newer kernel than what is running.
+
+4.) Upgrade your system
+time apt upgrade -y
+Approximately how long did it take for your system to upgrade?
+
+Check the apt log to see the packages that were upgraded on your system today.
+cat /var/log/apt/history.log
+
+Why are some items installed, and others only upgraded? This may require you to go on an internet safari to find a good answer.
+Check if the system wants to boot to a new kernel or not
+needrestart -k
+
+So the kernel that we're currently running is not the most current (newly installed) kernel that exists on the system. How can we also verify that?
+uname -r   #shows the current kernel
+ls /boot   #shows the installed kernels
+grep vmlinuz /boot/grub/grub.cfg
+So you need to think about why the grub.cfg menu has the new version and old (current) version of the kernel in there. This is because we always install a kernel and can fall back in the unlikely condition of a crash when the new kernel comes up.
+

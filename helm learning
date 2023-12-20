@@ -1,0 +1,5 @@
+
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm repo update
+
+helm install mysql-release  --set image.tag=8.0.26-debian-10-r68,auth.rootPassword=mysecretpassword,auth.createDatabase=true,auth.database=mydatabase,auth.username=myuser,auth.password=mypassword bitnami/mysql

@@ -1,0 +1,61 @@
+challenge 1
+
+resource "kubernetes_deployment" "frontend" {
+  metadata {
+    name = "frontend"
+    labels = {
+      app = "frontend"
+      name = "frontend"
+    }
+  }
+
+  spec {
+    replicas = 4
+    selector {
+      match_labels = {
+        app = "webapp"
+      }
+    }
+    template {
+      metadata {
+        labels = {
+          app = "webapp"
+          name = "webapp"
+        }
+      }
+      spec {
+        container {
+          image = "kodekloud/webapp-color:v1"
+          name  = "simple-webapp"
+          port {
+                  container_port = 8080
+
+               }
+        }
+      }
+    }
+  }
+}
+
+
+resource "kubernetes_service" "webapp-service" {
+
+  metadata {
+    labels = {
+      app = "frontend"
+    }
+    name = "webapp-service"
+  }
+
+  spec {
+    port {
+      port = 8080
+      node_port = 30080
+    }
+    selector = {
+      app = "webapp-service"
+    }
+    type = "NodePort"
+  }
+}
+
